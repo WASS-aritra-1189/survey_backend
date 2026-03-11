@@ -1,0 +1,40 @@
+/**
+ * Copyright (c) 2025 Webapp Software Solutions. All rights reserved.
+ * This file belongs to Webapp Software Solutions and is proprietary and confidential.
+ * Unauthorized copying of this file, via any medium is strictly prohibited.
+ * Website: https://webappssoft.com
+ */
+
+export enum PaymentGateway {
+  RAZORPAY = 'RAZORPAY',
+  STRIPE = 'STRIPE',
+  PAYPAL = 'PAYPAL',
+  PAYTM = 'PAYTM',
+  PHONEPE = 'PHONEPE',
+  GPAY = 'GPAY',
+  AMAZON_PAY = 'AMAZON_PAY',
+  CASHFREE = 'CASHFREE',
+  INSTAMOJO = 'INSTAMOJO',
+  CCAVENUE = 'CCAVENUE',
+  BILLDESK = 'BILLDESK',
+  HDFC_PAYMENT_GATEWAY = 'HDFC_PAYMENT_GATEWAY',
+  ICICI_PAYMENT_GATEWAY = 'ICICI_PAYMENT_GATEWAY',
+  SBI_EPAY = 'SBI_EPAY',
+  AXIS_PAYMENT_GATEWAY = 'AXIS_PAYMENT_GATEWAY',
+  KOTAK_PAYMENT_GATEWAY = 'KOTAK_PAYMENT_GATEWAY',
+  PAYUMONEY = 'PAYUMONEY',
+  MOBIKWIK = 'MOBIKWIK',
+  FREECHARGE = 'FREECHARGE',
+  AIRTEL_MONEY = 'AIRTEL_MONEY',
+  JIO_MONEY = 'JIO_MONEY',
+  OXIGEN_WALLET = 'OXIGEN_WALLET',
+  CITRUS_PAY = 'CITRUS_PAY',
+  ZAAKPAY = 'ZAAKPAY',
+  ATOM_PAYNETZ = 'ATOM_PAYNETZ',
+  DIRECPAY = 'DIRECPAY',
+  TECHPROCESS = 'TECHPROCESS',
+  WORLDLINE = 'WORLDLINE',
+  MANUAL = 'MANUAL',
+  BANK_TRANSFER = 'BANK_TRANSFER',
+  CASH = 'CASH',
+}
