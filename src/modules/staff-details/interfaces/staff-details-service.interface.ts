@@ -17,6 +17,8 @@ export abstract class IStaffDetailsService {
   ): Promise<PaginatedResult<StaffDetail>>;
   abstract create(createDto: CreateStaffDetailDto): Promise<StaffDetail>;
   abstract findOne(id: string): Promise<StaffDetail>;
+  abstract findMe(accountId: string): Promise<StaffDetail>;
+  abstract findProfileById(accountId: string): Promise<StaffDetail | any>;
   abstract update(
     id: string,
     updateStaffDetailDto: UpdateStaffDetailDto,

@@ -8,11 +8,12 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { StaffDetail } from './entities/staff-detail.entity';
+import { Account } from '../account/entities/account.entity';
 import { StaffDetailsController } from './staff-details.controller';
 import { StaffDetailsService } from './staff-details.service';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([StaffDetail])],
+  imports: [TypeOrmModule.forFeature([StaffDetail, Account])],
   controllers: [StaffDetailsController],
   providers: [
     {

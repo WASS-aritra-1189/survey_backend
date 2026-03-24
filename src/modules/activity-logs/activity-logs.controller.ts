@@ -5,7 +5,7 @@
  * Website: https://webappssoft.com
  */
 
-import { Controller, Get, Query, UseGuards } from '@nestjs/common';
+import { Controller, Get, Query, UseGuards, Param } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Roles } from '../../core/decorators/roles.decorator';
@@ -30,5 +30,17 @@ export class ActivityLogsController {
   @ApiResponse({ status: 200 })
   async findAll(@Query() query: QueryActivityLogDto) {
     return await this.activityLogsService.findAll(query);
+  }
+
+  @Get('user/:userId')
+  @Roles(UserRoles.ROOT, UserRoles.ADMIN, UserRoles.ROOT_STAFF)
+  @ResponseMessage(MESSAGE_CODES.DATA_RETRIEVED.code)
+  @ApiOperation({ summary: 'Get activity logs for a specific user' })
+  @ApiResponse({ status: 200 })
+  async findByUser(
+    @Param('userId') userId: string,
+    @Query() query: QueryActivityLogDto,
+  ) {
+    return await this.activityLogsService.findByUser(userId, query);
   }
 }

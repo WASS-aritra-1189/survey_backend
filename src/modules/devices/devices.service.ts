@@ -199,6 +199,51 @@ export class DevicesService {
     return reloaded;
   }
 
+  async getLocations(): Promise<any[]> {
+    const devices = await this.deviceRepository
+      .createQueryBuilder('device')
+      .select([
+        'device.id',
+        'device.deviceName',
+        'device.deviceId',
+        'device.status',
+        'device.battery',
+        'device.location',
+        'device.zoneId',
+        'device.assignedTo',
+      ])
+      .leftJoin('zones', 'zone', 'zone.id = device.zoneId')
+      .addSelect(['zone.name', 'zone.latitude', 'zone.longitude', 'zone.radiusInMeters', 'zone.isActive'])
+      .getRawMany();
+
+    return devices.map((row) => {
+      const [lat, lng] = row.device_location ? row.device_location.split(',').map(Number) : [null, null];
+      return {
+        id: row.device_id,
+        deviceName: row.device_deviceName,
+        deviceId: row.device_deviceId,
+        status: row.device_status,
+        battery: row.device_battery,
+        location: {
+          latitude: lat,
+          longitude: lng,
+          raw: row.device_location,
+        },
+        zone: row.device_zoneId
+          ? {
+              id: row.device_zoneId,
+              name: row.zone_name,
+              latitude: row.zone_latitude !== undefined ? Number(row.zone_latitude) : null,
+              longitude: row.zone_longitude !== undefined ? Number(row.zone_longitude) : null,
+              radiusInMeters: row.zone_radiusInMeters,
+              isActive: row.zone_isActive,
+            }
+          : null,
+        assignedTo: row.device_assignedTo,
+      };
+    });
+  }
+
   async remove(id: string): Promise<void> {
     const device = await this.findOne(id);
     await this.deviceRepository.remove(device);

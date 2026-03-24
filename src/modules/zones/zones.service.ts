@@ -25,8 +25,24 @@ export class ZonesService {
     return await this.zoneRepository.save(zone);
   }
 
-  async findAll(): Promise<any[]> {
-    const zones = await this.zoneRepository.find({ order: { name: 'ASC' } });
+  async findAll(query?: { search?: string; status?: string; page?: number; limit?: number }): Promise<any> {
+    const { search, status, page = 1, limit = 50 } = query || {};
+
+    const qb = this.zoneRepository.createQueryBuilder('zone').orderBy('zone.name', 'ASC');
+
+    if (search) {
+      qb.andWhere('zone.name ILIKE :search', { search: `%${search}%` });
+    }
+    if (status === 'active') {
+      qb.andWhere('zone.isActive = true');
+    } else if (status === 'inactive') {
+      qb.andWhere('zone.isActive = false');
+    }
+
+    qb.skip((page - 1) * limit).take(limit);
+
+    const [zones, total] = await qb.getManyAndCount();
+
     const zonesWithCount = await Promise.all(
       zones.map(async (zone) => {
         const assignmentCount = await this.assignmentRepository.count({ where: { zoneId: zone.id } });
@@ -34,7 +50,7 @@ export class ZonesService {
         return { ...zone, assignmentCount, deviceCount };
       })
     );
-    return zonesWithCount;
+    return { data: zonesWithCount, total, page, limit };
   }
 
   async findOne(id: string): Promise<any> {

@@ -44,12 +44,12 @@ export class RegisterService implements IRegisterService{
         
         const staffDetail = this.staffRepo.create({
           accountId: savedAccount.id,
-          firstName: dto.loginId,
-          lastName: 'Staff',
-          email: `${dto.loginId}@temp.com`,
-          phone: '0000000000',
+          firstName: null as unknown as string,
+          lastName: null as unknown as string,
+          email: null as unknown as string,
+          phone: null as unknown as string,
           designationId: defaultDesignation?.id
-        });
+        } as any);
         await this.staffRepo.save(staffDetail);
         
         return savedAccount;

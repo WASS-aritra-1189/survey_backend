@@ -52,6 +52,9 @@ export class ActivityLog extends BaseEntity {
   @Column({ type: 'uuid', nullable: true })
   resourceId: string;
 
+  @Column({ type: 'varchar', length: 45, nullable: true })
+  ipAddress: string;
+
   @Column({ type: 'jsonb', nullable: true })
   metadata: any;
 }

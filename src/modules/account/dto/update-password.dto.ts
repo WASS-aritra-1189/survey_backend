@@ -5,18 +5,16 @@
  * Website: https://webappssoft.com
  */
 
-import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsString, Matches, MinLength } from 'class-validator';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { IsNotEmpty, IsOptional, IsString, MinLength } from 'class-validator';
 
 export class UpdatePasswordDto {
-  @ApiProperty({ description: 'Current password' })
+  @ApiPropertyOptional({ description: 'Current password (optional for admin reset)' })
   @IsString()
-  @IsNotEmpty()
-  oldPassword: string;
+  @IsOptional()
+  oldPassword?: string;
 
-  @ApiProperty({
-    description: 'New password (min 8 characters)',
-  })
+  @ApiProperty({ description: 'New password (min 8 characters)' })
   @IsString()
   @IsNotEmpty()
   @MinLength(8)

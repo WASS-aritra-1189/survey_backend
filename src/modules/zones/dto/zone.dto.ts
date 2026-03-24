@@ -1,4 +1,5 @@
 import { IsString, IsNotEmpty, IsNumber, Min, Max, IsBoolean, IsOptional } from 'class-validator';
+import { Type } from 'class-transformer';
 
 export class CreateZoneDto {
   @IsString()
@@ -45,4 +46,22 @@ export class UpdateZoneDto {
   @IsOptional()
   @IsBoolean()
   isActive?: boolean;
+}
+
+export class QueryZoneDto {
+  @IsOptional()
+  @IsString()
+  search?: string;
+
+  @IsOptional()
+  @IsString()
+  status?: 'active' | 'inactive';
+
+  @IsOptional()
+  @Type(() => Number)
+  page?: number;
+
+  @IsOptional()
+  @Type(() => Number)
+  limit?: number;
 }

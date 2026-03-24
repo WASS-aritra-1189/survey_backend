@@ -21,6 +21,7 @@ export interface IAuthenticationService {
     otp?: string,
     accessToken?: string,
     name?: string,
+    ipAddress?: string,
   ): Promise<AuthResult>;
 }
 

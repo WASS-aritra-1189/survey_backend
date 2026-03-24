@@ -1,6 +1,6 @@
-import { Controller, Get, Post, Patch, Delete, Body, Param, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Patch, Delete, Body, Param, UseGuards, Query } from '@nestjs/common';
 import { ZonesService } from './zones.service';
-import { CreateZoneDto, UpdateZoneDto } from './dto/zone.dto';
+import { CreateZoneDto, UpdateZoneDto, QueryZoneDto } from './dto/zone.dto';
 import { JwtAuthGuard } from '../../core/guards/jwt-auth.guard';
 import { RolesGuard } from '../../core/guards/roles.guard';
 import { Roles } from '../../core/decorators/roles.decorator';
@@ -20,9 +20,8 @@ export class ZonesController {
 
   @Get()
   @Roles(UserRoles.ROOT, UserRoles.ADMIN)
-  async findAll() {
-    const zones = await this.zonesService.findAll();
-    return zones;
+  async findAll(@Query() query: QueryZoneDto) {
+    return await this.zonesService.findAll(query);
   }
 
   @Get(':id')

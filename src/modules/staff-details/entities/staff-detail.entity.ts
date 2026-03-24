@@ -19,19 +19,19 @@ import { Designation } from '../../designations/entities/designation.entity';
 @Index(['designationId'])
 @Index(['createdAt'])
 export class StaffDetail extends BaseEntity {
-  @Column({ type: 'varchar', length: 100 })
+  @Column({ type: 'varchar', length: 100, nullable: true })
   firstName: string;
 
   @Column({ type: 'varchar', length: 100, nullable: true })
   middleName: string;
 
-  @Column({ type: 'varchar', length: 100 })
+  @Column({ type: 'varchar', length: 100, nullable: true })
   lastName: string;
 
-  @Column({ type: 'varchar', length: 255, unique: true })
+  @Column({ type: 'varchar', length: 255, unique: true, nullable: true })
   email: string;
 
-  @Column({ type: 'varchar', length: 20 })
+  @Column({ type: 'varchar', length: 20, nullable: true })
   phone: string;
 
   @Column({ type: 'varchar', length: 20, nullable: true })

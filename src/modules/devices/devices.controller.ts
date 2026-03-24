@@ -5,7 +5,7 @@
  * Website: https://webappssoft.com
  */
 
-import { Body, Controller, Delete, Get, Param, Patch, Post, Query, Request, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, ParseUUIDPipe, Patch, Post, Query, Request, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Roles } from '../../core/decorators/roles.decorator';
@@ -89,13 +89,23 @@ export class DevicesController {
     }
   }
 
+  @Get('locations')
+  @Roles(UserRoles.ROOT, UserRoles.ADMIN, UserRoles.ROOT_STAFF, UserRoles.STAFF)
+  @Permissions(PermissionType.READ, 'devices')
+  @ResponseMessage(MESSAGE_CODES.DATA_RETRIEVED.code)
+  @ApiOperation({ summary: 'Get location of all devices with zone info' })
+  @ApiResponse({ status: 200 })
+  async getLocations() {
+    return await this.devicesService.getLocations();
+  }
+
   @Get(':id')
   @Roles(UserRoles.ROOT, UserRoles.ADMIN, UserRoles.ROOT_STAFF, UserRoles.STAFF)
   @Permissions(PermissionType.READ, 'devices')
   @ResponseMessage(MESSAGE_CODES.DATA_RETRIEVED.code)
   @ApiOperation({ summary: 'Get device by ID' })
   @ApiResponse({ status: 200 })
-  async findOne(@Param('id') id: string) {
+  async findOne(@Param('id', ParseUUIDPipe) id: string) {
     return await this.devicesService.findOne(id);
   }
 
@@ -105,7 +115,7 @@ export class DevicesController {
   @ResponseMessage(MESSAGE_CODES.DATA_UPDATED.code)
   @ApiOperation({ summary: 'Update device' })
   @ApiResponse({ status: 200 })
-  async update(@Param('id') id: string, @Body() dto: UpdateDeviceDto, @Request() req: { user: { sub: string } }) {
+  async update(@Param('id', ParseUUIDPipe) id: string, @Body() dto: UpdateDeviceDto, @Request() req: { user: { sub: string } }) {
     return await this.devicesService.update(id, dto, req.user.sub);
   }
 
@@ -115,7 +125,7 @@ export class DevicesController {
   @ResponseMessage(MESSAGE_CODES.DATA_DELETED.code)
   @ApiOperation({ summary: 'Delete device' })
   @ApiResponse({ status: 200 })
-  async remove(@Param('id') id: string) {
+  async remove(@Param('id', ParseUUIDPipe) id: string) {
     await this.devicesService.remove(id);
     return { message: 'Device deleted successfully' };
   }

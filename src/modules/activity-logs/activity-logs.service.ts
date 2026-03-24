@@ -25,6 +25,7 @@ export class ActivityLogsService {
     description: string,
     resourceId?: string,
     metadata?: any,
+    ipAddress?: string,
   ): Promise<void> {
     const log = this.activityLogRepository.create({
       accountId,
@@ -33,22 +34,50 @@ export class ActivityLogsService {
       description,
       resourceId,
       metadata,
+      ipAddress,
     });
     await this.activityLogRepository.save(log);
   }
 
+  async findByUser(userId: string, query: QueryActivityLogDto) {
+    const { page = 1, limit = 20, module, action, search, dateFrom, dateTo } = query;
+    const qb = this.activityLogRepository
+      .createQueryBuilder('log')
+      .leftJoinAndSelect('log.account', 'account')
+      .where('log.accountId = :userId', { userId })
+      .orderBy('log.createdAt', 'DESC');
+
+    if (module) qb.andWhere('log.module = :module', { module });
+    if (action) qb.andWhere('log.action = :action', { action });
+    if (search) qb.andWhere('log.description ILIKE :search', { search: `%${search}%` });
+    if (dateFrom) qb.andWhere('log.createdAt >= :dateFrom', { dateFrom: new Date(dateFrom) });
+    if (dateTo) {
+      const to = new Date(dateTo);
+      to.setHours(23, 59, 59, 999);
+      qb.andWhere('log.createdAt <= :dateTo', { dateTo: to });
+    }
+
+    qb.skip((page - 1) * limit).take(limit);
+
+    const [data, total] = await qb.getManyAndCount();
+    return { data, total, page, limit };
+  }
+
   async findAll(query: QueryActivityLogDto) {
-    const { page = 1, limit = 20, module, action } = query;
+    const { page = 1, limit = 20, module, action, search, dateFrom, dateTo } = query;
     const qb = this.activityLogRepository
       .createQueryBuilder('log')
       .leftJoinAndSelect('log.account', 'account')
       .orderBy('log.createdAt', 'DESC');
 
-    if (module) {
-      qb.andWhere('log.module = :module', { module });
-    }
-    if (action) {
-      qb.andWhere('log.action = :action', { action });
+    if (module) qb.andWhere('log.module = :module', { module });
+    if (action) qb.andWhere('log.action = :action', { action });
+    if (search) qb.andWhere('log.description ILIKE :search', { search: `%${search}%` });
+    if (dateFrom) qb.andWhere('log.createdAt >= :dateFrom', { dateFrom: new Date(dateFrom) });
+    if (dateTo) {
+      const to = new Date(dateTo);
+      to.setHours(23, 59, 59, 999);
+      qb.andWhere('log.createdAt <= :dateTo', { dateTo: to });
     }
 
     qb.skip((page - 1) * limit).take(limit);

@@ -12,6 +12,7 @@ import {
   Post,
   Request,
   UseGuards,
+  Ip,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import {
@@ -69,6 +70,7 @@ export class AuthController {
   async loginWithPassword(
     @Body() loginDto: LoginWithPasswordDto,
     @Request() req: Request,
+    @Ip() ip: string,
   ): Promise<AuthResult> {
     const domain = (req.headers['host'] ??
       req.headers['origin'] ??
@@ -79,6 +81,10 @@ export class AuthController {
       LoginType.PASSWORD,
       domain,
       loginDto.password,
+      undefined,
+      undefined,
+      undefined,
+      ip,
     );
   }
 
@@ -91,6 +97,7 @@ export class AuthController {
   async loginWithOTP(
     @Body() loginDto: LoginWithOTPDto,
     @Request() req: Request,
+    @Ip() ip: string,
   ): Promise<AuthResult> {
     const domain = (req.headers['host'] ??
       req.headers['origin'] ??
@@ -100,6 +107,11 @@ export class AuthController {
       loginDto.loginId,
       LoginType.OTP,
       domain,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      ip,
     );
   }
 
@@ -113,6 +125,7 @@ export class AuthController {
   async loginOTPVerification(
     @Body() loginDto: VerifyOTPDto,
     @Request() req: Request,
+    @Ip() ip: string,
   ): Promise<AuthResult> {
     const domain = (req.headers['host'] ??
       req.headers['origin'] ??
@@ -122,6 +135,11 @@ export class AuthController {
       loginDto.loginId,
       LoginType.OTP,
       domain,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      ip,
     );
   }
 

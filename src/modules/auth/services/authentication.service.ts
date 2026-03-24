@@ -50,6 +50,7 @@ export class AuthenticationService implements IAuthenticationService {
     otp?: string,
     accessToken?: string,
     name?: string,
+    ipAddress?: string,
   ): Promise<AuthResult> {
     const account = await this.getAccount(loginId, roles);
     this.validateAccount(account, domain);
@@ -78,6 +79,7 @@ export class AuthenticationService implements IAuthenticationService {
         `User logged in via ${loginType}`,
         account.id,
         { loginType, domain },
+        ipAddress,
       );
     }
 

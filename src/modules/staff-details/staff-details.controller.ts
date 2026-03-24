@@ -96,6 +96,32 @@ export class StaffDetailsController {
     return this.staffDetailsService.create(createDto);
   }
 
+  @Get('me')
+  @ResponseMessage('DATA_004')
+  @Serialize(StaffDetailResponseDto)
+  @Roles(UserRoles.ROOT, UserRoles.ADMIN, UserRoles.ROOT_STAFF, UserRoles.STAFF)
+  @Permissions(PermissionType.READ, 'staff_details')
+  @Throttle({ default: { limit: 30, ttl: 60000 } })
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Get my staff details from JWT token' })
+  @ApiResponse({ type: StaffDetailResponseDto })
+  findMe(@CurrentUser() user: IUser): Promise<StaffDetailResponseDto> {
+    return this.staffDetailsService.findMe(user.id);
+  }
+
+  @Get('profile/:id')
+  @ResponseMessage('DATA_004')
+  @Serialize(StaffDetailResponseDto)
+  @Roles(UserRoles.ROOT)
+  @Permissions(PermissionType.READ, 'staff_details')
+  @Throttle({ default: { limit: 30, ttl: 60000 } })
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Get staff profile by ID (ROOT only)' })
+  @ApiResponse({ type: StaffDetailResponseDto })
+  findProfile(@Param('id') id: string): Promise<any> {
+    return this.staffDetailsService.findProfileById(id);
+  }
+
   @Get(':id')
   @ResponseMessage('DATA_004')
   @Serialize(StaffDetailResponseDto)
@@ -107,17 +133,6 @@ export class StaffDetailsController {
   @ApiResponse({ type: StaffDetailResponseDto })
   findOne(@Param('id') id: string): Promise<StaffDetailResponseDto> {
     return this.staffDetailsService.findOne(id);
-  }
-
-  @Get('profile')
-  @ResponseMessage('DATA_004')
-  @Serialize(StaffDetailResponseDto)
-  @Throttle({ default: { limit: 30, ttl: 60000 } })
-  @ApiBearerAuth()
-  @ApiOperation({ summary: 'Get staff detail by ID' })
-  @ApiResponse({ type: StaffDetailResponseDto })
-  findProfile(@CurrentUser() user: IUser): Promise<StaffDetailResponseDto> {
-    return this.staffDetailsService.findOne(user.id);
   }
 
   @Patch(':id')

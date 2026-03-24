@@ -22,6 +22,7 @@ import { UpdateStaffDetailDto } from './dto/update-staff-detail.dto';
 import { CreateStaffDetailDto } from './dto/create-staff-detail.dto';
 import { StaffDetail } from './entities/staff-detail.entity';
 import { IStaffDetailsService } from './interfaces/staff-details-service.interface';
+import { Account } from '../account/entities/account.entity';
 
 @Injectable()
 export class StaffDetailsService implements IStaffDetailsService {
@@ -65,6 +66,8 @@ export class StaffDetailsService implements IStaffDetailsService {
   constructor(
     @InjectRepository(StaffDetail)
     private readonly staffDetailRepository: Repository<StaffDetail>,
+    @InjectRepository(Account)
+    private readonly accountRepository: Repository<Account>,
     private readonly cacheService: CacheService,
     private readonly queryBuilderService: QueryBuilderService,
   ) {}
@@ -94,6 +97,50 @@ export class StaffDetailsService implements IStaffDetailsService {
   async create(createDto: CreateStaffDetailDto): Promise<StaffDetail> {
     const staffDetail = this.staffDetailRepository.create(createDto);
     return await this.staffDetailRepository.save(staffDetail);
+  }
+
+  async findProfileById(accountId: string): Promise<StaffDetail | Partial<Account>> {
+    const staffDetail = await this.staffDetailRepository.findOne({
+      where: { accountId },
+      relations: ['account', 'designation'],
+    });
+
+    if (staffDetail) {
+      return staffDetail;
+    }
+
+    const account = await this.accountRepository.findOne({
+      where: { id: accountId },
+    });
+
+    if (!account) {
+      throw new CustomException(
+        MESSAGE_CODES.NOT_FOUND,
+        MessageType.ERROR,
+        HttpStatus.NOT_FOUND,
+      );
+    }
+
+    return {
+      id: account.id,
+      accountId: account.id,
+      account,
+    } as Partial<Account> & { accountId: string };
+  }
+
+  async findMe(accountId: string): Promise<StaffDetail> {
+    const staffDetail = await this.staffDetailRepository.findOne({
+      where: { accountId },
+      relations: ['account', 'designation'],
+    });
+    if (!staffDetail) {
+      throw new CustomException(
+        MESSAGE_CODES.NOT_FOUND,
+        MessageType.ERROR,
+        HttpStatus.NOT_FOUND,
+      );
+    }
+    return staffDetail;
   }
 
   async findOne(id: string): Promise<StaffDetail> {

@@ -170,11 +170,13 @@ export class SurveyMasterService implements ISurveyMasterService {
     return { accessToken, surveyMaster: surveyMasterData };
   }
 
-  async resetPassword(id: string, dto: { oldPassword: string; newPassword: string; confirmPassword: string }, accountId: string): Promise<void> {
+  async resetPassword(id: string, dto: { oldPassword?: string; newPassword: string; confirmPassword: string }, accountId: string): Promise<void> {
     const surveyMaster = await this.findOne(id);
-    const isPasswordValid = await bcrypt.compare(dto.oldPassword, surveyMaster.password);
-    if (!isPasswordValid) {
-      throw new CustomException(MESSAGE_CODES.AUTH_INVALID_CREDENTIALS, MessageType.ERROR);
+    if (dto.oldPassword) {
+      const isPasswordValid = await bcrypt.compare(dto.oldPassword, surveyMaster.password);
+      if (!isPasswordValid) {
+        throw new CustomException(MESSAGE_CODES.AUTH_INVALID_CREDENTIALS, MessageType.ERROR);
+      }
     }
     if (dto.newPassword !== dto.confirmPassword) {
       throw new CustomException(MESSAGE_CODES.AUTH_INVALID_CREDENTIALS, MessageType.ERROR);

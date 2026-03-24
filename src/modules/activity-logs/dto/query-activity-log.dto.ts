@@ -21,6 +21,18 @@ export class QueryActivityLogDto {
   @IsEnum(ActivityAction)
   action?: ActivityAction;
 
+  @ApiPropertyOptional({ description: 'Search in description' })
+  @IsOptional()
+  search?: string;
+
+  @ApiPropertyOptional({ description: 'Filter from date (ISO string)' })
+  @IsOptional()
+  dateFrom?: string;
+
+  @ApiPropertyOptional({ description: 'Filter to date (ISO string)' })
+  @IsOptional()
+  dateTo?: string;
+
   @ApiPropertyOptional({ default: 1 })
   @IsOptional()
   @Type(() => Number)
