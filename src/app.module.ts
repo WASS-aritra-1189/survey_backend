@@ -68,6 +68,7 @@ import { DashboardModule } from './modules/dashboard/dashboard.module';
 import { ZonesModule } from './modules/zones/zones.module';
 import { SurveyTypesModule } from './modules/survey-types/survey-types.module';
 import { FaqModule } from './modules/faqs/faqs.module';
+import { DownloadHistoryModule } from './modules/download-history/download-history.module';
 
 /**
  * Root Application Module - Module Pattern
@@ -157,6 +158,7 @@ import { FaqModule } from './modules/faqs/faqs.module';
     ZonesModule,
     SurveyTypesModule,
     FaqModule,
+    DownloadHistoryModule,
   ],
 })
 // eslint-disable-next-line @typescript-eslint/no-extraneous-class
