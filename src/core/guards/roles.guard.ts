@@ -44,6 +44,11 @@ export class RolesGuard implements CanActivate {
       return false; // No user authenticated or no roles
     }
 
+    // ROOT bypasses all role restrictions
+    if (user.roles === UserRoles.ROOT) {
+      return true; 
+    }
+
     // Convert string role to UserRoles enum
     const userRole = user.roles as UserRoles;
     

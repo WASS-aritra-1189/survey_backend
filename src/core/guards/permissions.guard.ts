@@ -19,6 +19,7 @@ import { PermissionType } from '../../shared/enums/permissions.enum';
 import { DefaultStatus } from '../../shared/enums/status.enum';
 import { RequestWithUser } from '../interfaces/auth.interface';
 import { CacheService } from '../services/cache.service';
+import { UserRoles } from '../../shared/enums/accouts.enum';
 
 @Injectable()
 export class PermissionsGuard implements CanActivate {
@@ -38,6 +39,9 @@ export class PermissionsGuard implements CanActivate {
 
     const request = context.switchToHttp().getRequest<RequestWithUser>();
     const user = request.user;
+
+    // ROOT bypasses all permission checks
+    if (user?.roles === UserRoles.ROOT) return true;
 
     for (const { menuName, action } of requiredPermissions) {
       const cacheKey = `permission:${user.sub}:${menuName}`;

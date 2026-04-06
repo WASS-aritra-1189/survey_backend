@@ -44,17 +44,14 @@ export class CreateSettingDto extends BaseDto {
 
   @IsString({ message: 'User domain must be a string' })
   @IsNotEmpty({ message: 'User domain is required' })
-  @IsUrl({}, { message: 'User domain must be a valid URL' })
   userDomain: string;
 
   @IsString({ message: 'Admin domain must be a string' })
   @IsNotEmpty({ message: 'Admin domain is required' })
-  @IsUrl({}, { message: 'Admin domain must be a valid URL' })
   adminDomain: string;
 
   @IsString({ message: 'Mobile domain must be a string' })
   @IsNotEmpty({ message: 'Mobile domain is required' })
-  @IsUrl({}, { message: 'Mobile domain must be a valid URL' })
   mobileDomain: string;
 
   @IsBoolean({ message: 'User maintenance mode must be a boolean' })
@@ -69,64 +66,52 @@ export class CreateSettingDto extends BaseDto {
   @IsOptional()
   mobileMaintenanceMode?: boolean;
 
-  @IsString({ message: 'User login logo must be a string' })
+  @IsString()
   @IsOptional()
-  @IsUrl({}, { message: 'User login logo must be a valid URL' })
   userLoginLogo?: string;
 
-  @IsString({ message: 'Admin login logo must be a string' })
+  @IsString()
   @IsOptional()
-  @IsUrl({}, { message: 'Admin login logo must be a valid URL' })
   adminLoginLogo?: string;
 
-  @IsString({ message: 'Mobile login logo must be a string' })
+  @IsString()
   @IsOptional()
-  @IsUrl({}, { message: 'Mobile login logo must be a valid URL' })
   mobileLoginLogo?: string;
 
-  @IsString({ message: 'User register logo must be a string' })
+  @IsString()
   @IsOptional()
-  @IsUrl({}, { message: 'User register logo must be a valid URL' })
   userRegisterLogo?: string;
 
-  @IsString({ message: 'Admin register logo must be a string' })
+  @IsString()
   @IsOptional()
-  @IsUrl({}, { message: 'Admin register logo must be a valid URL' })
   adminRegisterLogo?: string;
 
-  @IsString({ message: 'Mobile register logo must be a string' })
+  @IsString()
   @IsOptional()
-  @IsUrl({}, { message: 'Mobile register logo must be a valid URL' })
   mobileRegisterLogo?: string;
 
-  @IsString({ message: 'User login background must be a string' })
+  @IsString()
   @IsOptional()
-  @IsUrl({}, { message: 'User login background must be a valid URL' })
   userLoginBackground?: string;
 
-  @IsString({ message: 'Admin login background must be a string' })
+  @IsString()
   @IsOptional()
-  @IsUrl({}, { message: 'Admin login background must be a valid URL' })
   adminLoginBackground?: string;
 
-  @IsString({ message: 'Mobile login background must be a string' })
+  @IsString()
   @IsOptional()
-  @IsUrl({}, { message: 'Mobile login background must be a valid URL' })
   mobileLoginBackground?: string;
 
-  @IsString({ message: 'User register background must be a string' })
+  @IsString()
   @IsOptional()
-  @IsUrl({}, { message: 'User register background must be a valid URL' })
   userRegisterBackground?: string;
 
-  @IsString({ message: 'Admin register background must be a string' })
+  @IsString()
   @IsOptional()
-  @IsUrl({}, { message: 'Admin register background must be a valid URL' })
   adminRegisterBackground?: string;
 
-  @IsString({ message: 'Mobile register background must be a string' })
+  @IsString()
   @IsOptional()
-  @IsUrl({}, { message: 'Mobile register background must be a valid URL' })
   mobileRegisterBackground?: string;
 
   @IsNumber({}, { message: 'Account level must be a number' })

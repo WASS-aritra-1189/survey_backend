@@ -18,6 +18,7 @@ import { ActivityLogsService } from '../activity-logs/activity-logs.service';
 import { ActivityAction, ActivityModule } from '../activity-logs/entities/activity-log.entity';
 import { CreateSurveyMasterDto } from './dto/create-survey-master.dto';
 import { QuerySurveyMasterDto } from './dto/query-survey-master.dto';
+import { QueryPerformanceAnalyticsDto } from './dto/query-performance-analytics.dto';
 import { UpdateSurveyMasterDto } from './dto/update-survey-master.dto';
 import { SurveyMaster } from './entities/survey-master.entity';
 import { ISurveyMasterService } from './interfaces/survey-master-service.interface';
@@ -150,6 +151,84 @@ export class SurveyMasterService implements ISurveyMasterService {
       `Deleted survey master: ${surveyMaster.loginId}`,
       id,
     );
+  }
+
+  async getPerformanceAnalytics(query: QueryPerformanceAnalyticsDto): Promise<any> {
+    const { startDate, endDate, surveyId, masterId } = query;
+
+    // Fetch masters (optionally filtered by masterId)
+    const masterQb = this.surveyMasterRepository.createQueryBuilder('sm');
+    if (masterId) {
+      masterQb.where('sm.id = :masterId', { masterId });
+    }
+    const masters = await masterQb.getMany();
+
+    const data = await Promise.all(
+      masters.map(async (master) => {
+        // Build response count query
+        let responseQuery = `SELECT COUNT(*) as count FROM survey_responses WHERE "surveyMasterId" = $1`;
+        const responseParams: any[] = [master.id];
+        let idx = 2;
+        if (surveyId) {
+          responseQuery += ` AND "surveyId" = $${idx++}`;
+          responseParams.push(surveyId);
+        }
+        if (startDate) {
+          responseQuery += ` AND "createdAt" >= $${idx++}`;
+          responseParams.push(new Date(startDate));
+        }
+        if (endDate) {
+          const end = new Date(endDate);
+          end.setHours(23, 59, 59, 999);
+          responseQuery += ` AND "createdAt" <= $${idx++}`;
+          responseParams.push(end);
+        }
+        const [responseResult] = await this.surveyMasterRepository.query(responseQuery, responseParams);
+
+        // Count assigned surveys
+        const [surveyResult] = await this.surveyMasterRepository.query(
+          `SELECT COUNT(*) as count FROM surveys WHERE "surveyMasterIds"::jsonb @> $1::jsonb`,
+          [JSON.stringify([master.id])],
+        );
+
+        // Daily trend
+        const trendStart = startDate
+          ? new Date(startDate)
+          : new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+        const trendEnd = endDate
+          ? (() => { const d = new Date(endDate); d.setHours(23, 59, 59, 999); return d; })()
+          : new Date();
+
+        let trendQuery = `SELECT DATE("createdAt") as date, COUNT(*) as count FROM survey_responses WHERE "surveyMasterId" = $1 AND "createdAt" >= $2 AND "createdAt" <= $3`;
+        const trendParams: any[] = [master.id, trendStart, trendEnd];
+        let trendIdx = 4;
+        if (surveyId) {
+          trendQuery += ` AND "surveyId" = $${trendIdx++}`;
+          trendParams.push(surveyId);
+        }
+        trendQuery += ` GROUP BY DATE("createdAt") ORDER BY date ASC`;
+        const trend = await this.surveyMasterRepository.query(trendQuery, trendParams);
+
+        return {
+          id: master.id,
+          loginId: master.loginId,
+          status: master.status,
+          surveyLimit: master.surveyLimit,
+          totalResponses: parseInt(responseResult?.count || '0'),
+          totalSurveysAssigned: parseInt(surveyResult?.count || '0'),
+          dailyTrend: trend.map((t: any) => ({
+            date: String(t.date).split('T')[0],
+            count: parseInt(t.count),
+          })),
+        };
+      })
+    );
+
+    return {
+      data,
+      totalResponses: data.reduce((sum, m) => sum + m.totalResponses, 0),
+      totalMasters: data.length,
+    };
   }
 
   async login(loginId: string, password: string): Promise<{ accessToken: string; surveyMaster: any }> {

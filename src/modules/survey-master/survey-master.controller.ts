@@ -30,6 +30,7 @@ import { UserRoles } from '../../shared/enums/accouts.enum';
 import { PermissionType } from '../../shared/enums/permissions.enum';
 import { CreateSurveyMasterDto } from './dto/create-survey-master.dto';
 import { QuerySurveyMasterDto } from './dto/query-survey-master.dto';
+import { QueryPerformanceAnalyticsDto } from './dto/query-performance-analytics.dto';
 import { SurveyMasterResponseDto } from './dto/survey-master-response.dto';
 import { UpdateSurveyMasterDto } from './dto/update-survey-master.dto';
 import { UpdateSurveyMasterStatusDto } from './dto/update-survey-master-status.dto';
@@ -64,6 +65,17 @@ export class SurveyMasterController {
     @Request() req: { user: { sub: string } },
   ) {
     return await this.surveyMasterService.create(dto, req.user.sub);
+  }
+
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @ApiBearerAuth()
+  @Get('performance-analytics')
+  @Roles(UserRoles.ROOT, UserRoles.ADMIN, UserRoles.ROOT_STAFF, UserRoles.STAFF)
+  @ResponseMessage(MESSAGE_CODES.DATA_RETRIEVED.code)
+  @ApiOperation({ summary: 'Get performance analytics for all survey masters' })
+  @ApiResponse({ status: 200 })
+  async getPerformanceAnalytics(@Query() query: QueryPerformanceAnalyticsDto) {
+    return await this.surveyMasterService.getPerformanceAnalytics(query);
   }
 
   @UseGuards(AuthGuard('jwt'), RolesGuard, PermissionsGuard)
